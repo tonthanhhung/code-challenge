@@ -15,7 +15,7 @@ Calculate the sum of numbers from 1 to n using three different approaches:
 - **Iterative approach** - O(n) loop-based solution  
 - **Array Reduce method** - Functional programming approach
 
-**[View Solution →](./src/problem1/index.ts)**
+**[View Solution →](https://github.com/tonthanhhung/code-challenge/blob/main/src/problem1/index.ts)**
 
 ### Problem 2: Interactive Web Application
 A modern cryptocurrency token swap interface built with:
@@ -25,7 +25,7 @@ A modern cryptocurrency token swap interface built with:
 - Custom hooks for token price fetching
 - Form components with real-time calculations
 
-**[View Project →](./src/problem2/README.md)** | **[Live Demo →](https://tonthanhhung.github.io/code-challenge/currency-swap/)**
+**[View Project →](https://github.com/tonthanhhung/code-challenge/tree/main/src/problem2)** | **[Live Demo →](https://tonthanhhung.github.io/code-challenge/currency-swap/)**
 
 ### Problem 3: Messy React Refactoring
 Code review and refactoring exercise demonstrating:
@@ -34,7 +34,7 @@ Code review and refactoring exercise demonstrating:
 - Performance optimizations (useMemo, stable keys)
 - Clean code architecture principles
 
-**[View Refactored Code →](./src/problem3/index.tsx)**
+**[View Refactored Code →](https://github.com/tonthanhhung/code-challenge/blob/main/src/problem3/index.tsx)**
 
 ## Submission
 You can either provide a link to an online repository, attach the solution in your application, or whichever method you prefer.

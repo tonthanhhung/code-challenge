@@ -11,7 +11,8 @@
     "preview": "vite preview",
     "predeploy": "npm run build && npm run build:deploy",
     "build:deploy": "rm -rf deploy && mkdir -p deploy/currency-swap && cp -r dist/* deploy/currency-swap/ && touch deploy/.nojekyll",
-    "deploy": "gh-pages -d deploy -b gh-pages"
+    "deploy": "gh-pages -d deploy -b gh-pages -f",
+    "deploy:clean": "git push origin --delete gh-pages"
   },
   "dependencies": {
     "react": "^19.2.4",

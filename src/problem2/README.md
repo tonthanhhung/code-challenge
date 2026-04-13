@@ -10,6 +10,18 @@
 
 This application is configured for automatic deployment to **GitHub Pages** with a custom subdirectory (`/currency-swap/`).
 
+> ⚠️ **Important:** If you previously had a Gatsby site or other content on the `gh-pages` branch, you need to clear it first.
+
+### First-Time Setup (Clear Existing gh-pages)
+
+```bash
+# Delete the existing gh-pages branch
+npm run deploy:clean
+
+# Or manually:
+# git push origin --delete gh-pages
+```
+
 ### Deploy to GitHub Pages
 
 ```bash
@@ -24,9 +36,22 @@ The deploy script will:
 1. Build the production app
 2. Create a `deploy/currency-swap/` directory structure
 3. Copy all build files to the subdirectory
-4. Deploy to the `gh-pages` branch
+4. Force deploy to the `gh-pages` branch (overwrites any existing content)
 
-**Live URL:** `https://tonthanhhung.github.io/code-challenge/currency-swap/`
+### GitHub Pages Settings
+
+Ensure your repository settings are configured correctly:
+
+1. Go to **Settings → Pages** in your GitHub repository
+2. Under "Build and deployment":
+   - **Source**: Select "Deploy from a branch"
+   - **Branch**: Select `gh-pages` / `/(root)`
+3. Click **Save**
+
+Wait a few minutes for GitHub to build the site, then visit:
+`https://tonthanhhung.github.io/code-challenge/currency-swap/`
+
+---
 
 ### Manual Build
 
