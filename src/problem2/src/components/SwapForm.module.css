@@ -43,8 +43,59 @@
 
 .panelRow {
   display: flex;
+  flex-direction: column;
   gap: 12px;
-  align-items: flex-start;
+  align-items: stretch;
+}
+
+@media (min-width: 480px) {
+  .panelRow {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+}
+
+.amountWrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  width: 100%;
+}
+
+.amountInput {
+  border: none;
+  background: transparent;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text);
+  outline: none;
+  width: 100%;
+  padding: 0;
+  font-variant-numeric: tabular-nums;
+  -moz-appearance: textfield;
+  min-height: 36px;
+}
+
+@media (min-width: 480px) {
+  .amountInput {
+    font-size: 28px;
+  }
+}
+
+.tokenSelectWrapper {
+  flex-shrink: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+@media (min-width: 480px) {
+  .tokenSelectWrapper {
+    width: 160px;
+  }
 }
 
 .amountWrapper {

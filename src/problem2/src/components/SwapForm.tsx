@@ -29,8 +29,14 @@ export function SwapForm({ tokens }: Props) {
     const errs: typeof errors = {};
     if (!fromToken) errs.fromToken = 'Select a token to send';
     if (!toToken) errs.toToken = 'Select a token to receive';
-    if (!fromAmount || isNaN(Number(fromAmount)) || Number(fromAmount) <= 0)
-      errs.fromAmount = 'Enter a valid amount';
+    
+    const amountNum = Number(fromAmount);
+    if (!fromAmount || isNaN(amountNum)) {
+      errs.fromAmount = 'Enter a valid number';
+    } else if (amountNum <= 0) {
+      errs.fromAmount = 'Amount must be greater than 0';
+    }
+    
     return errs;
   }
 
