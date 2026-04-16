@@ -71,13 +71,21 @@ body {
 
 .card {
   background: var(--card-bg);
-  border-radius: 24px;
-  padding: 20px;
+  border-radius: 20px;
+  padding: 16px;
   width: 100%;
-  max-width: 440px;
+  max-width: 100%;
   box-shadow: var(--shadow-lg);
   border: 1.5px solid var(--border);
   margin: 0 auto;
+}
+
+@media (min-width: 360px) {
+  .card {
+    max-width: 440px;
+    padding: 20px;
+    border-radius: 24px;
+  }
 }
 
 @media (min-width: 480px) {
@@ -87,11 +95,6 @@ body {
 }
 
 @media (max-width: 359px) {
-  .card {
-    padding: 16px;
-    border-radius: 20px;
-  }
-  
   #root {
     padding: 12px 8px;
   }
