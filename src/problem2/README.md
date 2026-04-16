@@ -182,8 +182,14 @@ Recommended plugins for production:
 ---
 
 ## 🖼️ Demo
-![img.png](img.png)
+### Desktop size 
+![verify-desktop-1440.png](verify-desktop-1440.png)
 
+### Tablet size
+![verify-tablet-768.png](verify-tablet-768.png)
+
+### Mobile size
+![verify-mobile-320.png](verify-mobile-320.png)
 ## 📝 Notes
 
 - The React Compiler is **not enabled** by default due to performance impact
