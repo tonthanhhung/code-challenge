@@ -15,98 +15,71 @@
 }
 
 .title {
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 700;
   color: var(--text);
   margin: 0;
   letter-spacing: -0.5px;
 }
 
-@media (min-width: 480px) {
-  .title {
-    font-size: 22px;
-  }
-}
-
 .rate {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-muted);
   font-variant-numeric: tabular-nums;
-}
-
-@media (min-width: 480px) {
-  .rate {
-    font-size: 12px;
-  }
 }
 
 .panel {
   background: var(--input-bg);
   border: 1.5px solid var(--border);
   border-radius: 16px;
-  padding: 12px;
+  padding: 16px;
   display: flex;
   flex-direction: column;
   gap: 8px;
   transition: border-color 0.15s;
 }
 
-@media (min-width: 480px) {
-  .panel {
-    padding: 16px;
-  }
-}
-
 .panel:focus-within {
   border-color: var(--accent);
 }
 
+/* Mobile: wrap to 2 rows */
 .panelRow {
   display: flex;
-  flex-direction: row;
-  gap: 8px;
-  align-items: flex-start;
+  flex-direction: column;
+  gap: 12px;
 }
 
+/* Desktop: side by side */
 @media (min-width: 480px) {
   .panelRow {
+    flex-direction: row;
+    align-items: flex-start;
     gap: 12px;
   }
 }
 
 .amountWrapper {
-  flex: 1 1 auto;
+  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
   min-width: 0;
-  overflow: hidden;
-}
-
-@media (min-width: 480px) {
-  .amountWrapper {
-    gap: 6px;
-  }
+  width: 100%;
 }
 
 .amountLabel {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--text-muted);
 }
 
-@media (min-width: 480px) {
-  .amountLabel {
-    font-size: 12px;
-  }
-}
-
 .amountInput {
   border: none;
   background: transparent;
-  font-size: 20px;
+  font-size: 28px;
   font-weight: 700;
   color: var(--text);
   outline: none;
@@ -114,14 +87,7 @@
   padding: 0;
   font-variant-numeric: tabular-nums;
   -moz-appearance: textfield;
-  min-height: 32px;
-}
-
-@media (min-width: 480px) {
-  .amountInput {
-    font-size: 28px;
-    min-height: 36px;
-  }
+  min-height: 36px;
 }
 
 .amountInput::-webkit-outer-spin-button,
@@ -138,11 +104,10 @@
   color: var(--error);
 }
 
+/* Mobile: full width, Desktop: fixed width */
 .tokenSelectWrapper {
   flex-shrink: 0;
-  width: auto;
-  min-width: 100px;
-  max-width: 40%;
+  width: 100%;
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -151,33 +116,19 @@
 @media (min-width: 480px) {
   .tokenSelectWrapper {
     width: 160px;
-    min-width: auto;
-    max-width: none;
   }
 }
 
 .usdValue {
-  font-size: 12px;
+  font-size: 13px;
   color: var(--text-muted);
   font-variant-numeric: tabular-nums;
 }
 
-@media (min-width: 480px) {
-  .usdValue {
-    font-size: 13px;
-  }
-}
-
 .errorMsg {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--error);
   margin-top: 2px;
-}
-
-@media (min-width: 480px) {
-  .errorMsg {
-    font-size: 12px;
-  }
 }
 
 .swapBtnRow {
@@ -189,8 +140,8 @@
 }
 
 .swapDirectionBtn {
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   border: 2px solid var(--border);
   background: var(--card-bg);
@@ -202,13 +153,6 @@
   transition: border-color 0.15s, color 0.15s, transform 0.2s;
 }
 
-@media (min-width: 480px) {
-  .swapDirectionBtn {
-    width: 36px;
-    height: 36px;
-  }
-}
-
 .swapDirectionBtn:hover {
   border-color: var(--accent);
   color: var(--accent);
@@ -216,41 +160,25 @@
 }
 
 .swapDirectionBtn svg {
-  width: 16px;
-  height: 16px;
-}
-
-@media (min-width: 480px) {
-  .swapDirectionBtn svg {
-    width: 18px;
-    height: 18px;
-  }
+  width: 18px;
+  height: 18px;
 }
 
 .submitBtn {
   margin-top: 8px;
-  padding: 14px;
+  padding: 16px;
   background: var(--accent);
   color: #fff;
   border: none;
-  border-radius: 12px;
-  font-size: 15px;
+  border-radius: 14px;
+  font-size: 16px;
   font-weight: 700;
   cursor: pointer;
   transition: opacity 0.15s, transform 0.1s;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 48px;
-}
-
-@media (min-width: 480px) {
-  .submitBtn {
-    padding: 16px;
-    border-radius: 14px;
-    font-size: 16px;
-    min-height: 54px;
-  }
+  min-height: 54px;
 }
 
 .submitBtn:hover:not(:disabled) {
@@ -267,19 +195,12 @@
 }
 
 .spinner {
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
   border: 3px solid rgba(255, 255, 255, 0.3);
   border-top-color: #fff;
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
-}
-
-@media (min-width: 480px) {
-  .spinner {
-    width: 22px;
-    height: 22px;
-  }
 }
 
 @keyframes spin {
@@ -292,15 +213,9 @@
   flex-direction: column;
   align-items: center;
   gap: 16px;
-  padding: 24px 0;
+  padding: 32px 0;
   text-align: center;
   animation: fadeIn 0.3s ease;
-}
-
-@media (min-width: 480px) {
-  .success {
-    padding: 32px 0;
-  }
 }
 
 @keyframes fadeIn {
@@ -309,8 +224,8 @@
 }
 
 .successIcon {
-  width: 56px;
-  height: 56px;
+  width: 64px;
+  height: 64px;
   border-radius: 50%;
   background: var(--success-bg);
   display: flex;
@@ -319,69 +234,35 @@
   color: var(--success);
 }
 
-@media (min-width: 480px) {
-  .successIcon {
-    width: 64px;
-    height: 64px;
-  }
-}
-
 .successIcon svg {
-  width: 28px;
-  height: 28px;
-}
-
-@media (min-width: 480px) {
-  .successIcon svg {
-    width: 32px;
-    height: 32px;
-  }
+  width: 32px;
+  height: 32px;
 }
 
 .success h2 {
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 700;
   color: var(--text);
   margin: 0;
 }
 
-@media (min-width: 480px) {
-  .success h2 {
-    font-size: 22px;
-  }
-}
-
 .success p {
-  font-size: 14px;
+  font-size: 15px;
   color: var(--text-muted);
   margin: 0;
 }
 
-@media (min-width: 480px) {
-  .success p {
-    font-size: 15px;
-  }
-}
-
 .resetBtn {
   margin-top: 8px;
-  padding: 12px 24px;
+  padding: 12px 32px;
   background: var(--accent);
   color: #fff;
   border: none;
-  border-radius: 10px;
-  font-size: 14px;
+  border-radius: 12px;
+  font-size: 15px;
   font-weight: 600;
   cursor: pointer;
   transition: opacity 0.15s;
-}
-
-@media (min-width: 480px) {
-  .resetBtn {
-    padding: 12px 32px;
-    border-radius: 12px;
-    font-size: 15px;
-  }
 }
 
 .resetBtn:hover {
