@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import type { Token } from '../types';
-import { TokenSelect } from './TokenSelect';
+import { SwapInputGroup } from './SwapInputGroup';
 import styles from './SwapForm.module.css';
 
 interface Props {
@@ -69,6 +69,14 @@ export function SwapForm({ tokens }: Props) {
     setStatus('idle');
   }
 
+  const fromUsdValue = fromToken && fromAmount
+    ? `≈ $${(Number(fromAmount) * fromToken.price).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD`
+    : undefined;
+
+  const toUsdValue = toToken && toAmount
+    ? `≈ $${(Number(toAmount) * toToken.price).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD`
+    : undefined;
+
   if (status === 'success') {
     return (
       <div className={styles.success}>
@@ -100,47 +108,24 @@ export function SwapForm({ tokens }: Props) {
         )}
       </div>
 
-      {/* from section */}
-      <div className={styles.panel}>
-        <div className={styles.panelRow}>
-          <div className={styles.amountWrapper}>
-            <label className={styles.amountLabel} htmlFor="from-amount">
-              You send
-            </label>
-            <input
-              id="from-amount"
-              className={`${styles.amountInput} ${errors.fromAmount ? styles.inputError : ''}`}
-              type="number"
-              min="0"
-              step="any"
-              placeholder="0.00"
-              value={fromAmount}
-              onChange={(e) => {
-                setFromAmount(e.target.value);
-                if (errors.fromAmount) setErrors((p) => ({ ...p, fromAmount: undefined }));
-              }}
-            />
-            {errors.fromAmount && <span className={styles.errorMsg}>{errors.fromAmount}</span>}
-          </div>
-          <div className={styles.tokenSelectWrapper}>
-            <TokenSelect
-              tokens={tokens}
-              value={fromToken}
-              onChange={(t) => {
-                setFromToken(t);
-                if (errors.fromToken) setErrors((p) => ({ ...p, fromToken: undefined }));
-              }}
-              label="Token"
-            />
-            {errors.fromToken && <span className={styles.errorMsg}>{errors.fromToken}</span>}
-          </div>
-        </div>
-        {fromToken && fromAmount && (
-          <div className={styles.usdValue}>
-            ≈ ${(Number(fromAmount) * fromToken.price).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD
-          </div>
-        )}
-      </div>
+      <SwapInputGroup
+        id="from-amount"
+        label="You send"
+        amount={fromAmount}
+        onAmountChange={(value) => {
+          setFromAmount(value);
+          if (errors.fromAmount) setErrors((p) => ({ ...p, fromAmount: undefined }));
+        }}
+        token={fromToken}
+        onTokenChange={(t) => {
+          setFromToken(t);
+          if (errors.fromToken) setErrors((p) => ({ ...p, fromToken: undefined }));
+        }}
+        tokens={tokens}
+        error={errors.fromAmount}
+        usdValue={fromUsdValue}
+      />
+
 
       {/* swap direction button */}
       <div className={styles.swapBtnRow}>
@@ -158,42 +143,20 @@ export function SwapForm({ tokens }: Props) {
         </button>
       </div>
 
-      {/* to section */}
-      <div className={styles.panel}>
-        <div className={styles.panelRow}>
-          <div className={styles.amountWrapper}>
-            <label className={styles.amountLabel} htmlFor="to-amount">
-              You receive
-            </label>
-            <input
-              id="to-amount"
-              className={styles.amountInput}
-              type="text"
-              placeholder="0.00"
-              value={toAmount}
-              readOnly
-              tabIndex={-1}
-            />
-          </div>
-          <div className={styles.tokenSelectWrapper}>
-            <TokenSelect
-              tokens={tokens}
-              value={toToken}
-              onChange={(t) => {
-                setToToken(t);
-                if (errors.toToken) setErrors((p) => ({ ...p, toToken: undefined }));
-              }}
-              label="Token"
-            />
-            {errors.toToken && <span className={styles.errorMsg}>{errors.toToken}</span>}
-          </div>
-        </div>
-        {toToken && toAmount && (
-          <div className={styles.usdValue}>
-            ≈ ${(Number(toAmount) * toToken.price).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD
-          </div>
-        )}
-      </div>
+      <SwapInputGroup
+        id="to-amount"
+        label="You receive"
+        amount={toAmount}
+        token={toToken}
+        onTokenChange={(t) => {
+          setToToken(t);
+          if (errors.toToken) setErrors((p) => ({ ...p, toToken: undefined }));
+        }}
+        tokens={tokens}
+        error={errors.toToken}
+        readOnly
+        usdValue={toUsdValue}
+      />
 
       <button
         type="submit"
