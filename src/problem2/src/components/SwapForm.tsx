@@ -1,7 +1,6 @@
 import { useState, useCallback } from 'react';
 import type { Token } from '../types';
 import { SwapInputGroup } from './SwapInputGroup';
-import styles from './SwapForm.module.css';
 
 interface Props {
   tokens: Token[];
@@ -79,18 +78,21 @@ export function SwapForm({ tokens }: Props) {
 
   if (status === 'success') {
     return (
-      <div className={styles.success}>
-        <div className={styles.successIcon}>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+      <div className="flex flex-col items-center gap-4 px-8 py-8 text-center animate-[fadeIn_0.3s_ease]">
+        <div className="w-16 h-16 rounded-full bg-success-bg flex items-center justify-center text-success">
+          <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
             <polyline points="20 6 9 17 4 12" />
           </svg>
         </div>
-        <h2>Swap Confirmed!</h2>
-        <p>
+        <h2 className="text-[22px] font-bold text-text m-0">Swap Confirmed!</h2>
+        <p className="text-[15px] text-text-muted m-0">
           You swapped <strong>{fromAmount} {fromToken?.currency}</strong> for{' '}
           <strong>{toAmount} {toToken?.currency}</strong>
         </p>
-        <button className={styles.resetBtn} onClick={handleReset}>
+        <button 
+          className="mt-2 px-8 py-3 bg-accent text-white border-0 rounded-xl text-[15px] font-semibold cursor-pointer transition-opacity hover:opacity-90"
+          onClick={handleReset}
+        >
           New Swap
         </button>
       </div>
@@ -98,11 +100,11 @@ export function SwapForm({ tokens }: Props) {
   }
 
   return (
-    <form className={styles.form} onSubmit={handleSubmit} noValidate>
-      <div className={styles.header}>
-        <h1 className={styles.title}>Swap</h1>
+    <form className="flex flex-col gap-2 w-full" onSubmit={handleSubmit} noValidate>
+      <div className="flex items-baseline justify-between mb-1 flex-wrap gap-2">
+        <h1 className="text-[22px] font-bold text-text m-0 tracking-tight">Swap</h1>
         {exchangeRate && fromToken && toToken && (
-          <span className={styles.rate}>
+          <span className="text-xs text-text-muted tabular-nums">
             1 {fromToken.currency} ≈ {exchangeRate.toFixed(6)} {toToken.currency}
           </span>
         )}
@@ -126,17 +128,16 @@ export function SwapForm({ tokens }: Props) {
         usdValue={fromUsdValue}
       />
 
-
       {/* swap direction button */}
-      <div className={styles.swapBtnRow}>
+      <div className="flex justify-center relative z-10 my-[-4px]">
         <button
           type="button"
-          className={styles.swapDirectionBtn}
+          className="w-9 h-9 rounded-full border-2 border-border bg-card cursor-pointer flex items-center justify-center text-text-muted transition-all hover:border-accent hover:text-accent hover:rotate-180"
           onClick={handleSwapTokens}
           aria-label="Swap direction"
           title="Swap direction"
         >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+          <svg className="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
             <line x1="12" y1="5" x2="12" y2="19" />
             <polyline points="19 12 12 19 5 12" />
           </svg>
@@ -160,11 +161,11 @@ export function SwapForm({ tokens }: Props) {
 
       <button
         type="submit"
-        className={styles.submitBtn}
+        className="mt-2 px-4 py-4 bg-accent text-white border-0 rounded-xl text-base font-bold cursor-pointer transition-all flex items-center justify-center min-h-[54px] hover:opacity-90 active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed"
         disabled={status === 'loading'}
       >
         {status === 'loading' ? (
-          <span className={styles.spinner} aria-label="Loading" />
+          <span className="w-[22px] h-[22px] border-[3px] border-white/30 border-t-white rounded-full animate-spin" aria-label="Loading" />
         ) : (
           'Confirm Swap'
         )}

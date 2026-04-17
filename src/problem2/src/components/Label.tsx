@@ -1,5 +1,3 @@
-import styles from './Label.module.css';
-
 interface LabelProps {
   children: React.ReactNode;
   htmlFor?: string;
@@ -7,7 +5,10 @@ interface LabelProps {
 
 export function Label({ children, htmlFor }: LabelProps) {
   return (
-    <label className={styles.label} htmlFor={htmlFor}>
+    <label
+      htmlFor={htmlFor}
+      className="text-xs font-semibold tracking-wider uppercase text-text-muted"
+    >
       {children}
     </label>
   );

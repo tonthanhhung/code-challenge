@@ -1,7 +1,6 @@
 import { TokenSelect } from './TokenSelect';
 import { Label } from './Label';
 import type { Token } from '../types';
-import styles from './SwapInputGroup.module.css';
 
 interface SwapInputGroupProps {
   id: string;
@@ -31,13 +30,13 @@ export function SwapInputGroup({
   placeholder = '0.00',
 }: SwapInputGroupProps) {
   return (
-    <div className={styles.panel}>
-      <div className={styles.panelRow}>
-        <div className={styles.amountWrapper}>
+    <div className="bg-input border-[1.5px] border-border rounded-xl p-3 sm:p-4 flex flex-col gap-2 transition-colors focus-within:border-accent">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:gap-3">
+        <div className="flex-1 flex flex-col gap-1.5 min-w-0 w-full">
           <Label htmlFor={id}>{label}</Label>
           <input
             id={id}
-            className={`${styles.amountInput} ${error ? styles.inputError : ''}`}
+            className={`border-0 bg-transparent text-2xl sm:text-[28px] font-bold text-text outline-none w-full p-0 tabular-nums appearance-none min-h-9 placeholder:text-text-muted placeholder:font-normal ${error ? 'text-error' : ''}`}
             type="number"
             min="0"
             step="any"
@@ -47,9 +46,9 @@ export function SwapInputGroup({
             readOnly={readOnly}
             tabIndex={readOnly ? -1 : undefined}
           />
-          {error && <span className={styles.errorMsg}>{error}</span>}
+          {error && <span className="text-xs text-error mt-0.5">{error}</span>}
         </div>
-        <div className={styles.tokenSelectWrapper}>
+        <div className="shrink-0 w-full sm:w-40 flex flex-col gap-1">
           <Label>Token</Label>
           <TokenSelect
             tokens={tokens}
@@ -60,7 +59,7 @@ export function SwapInputGroup({
         </div>
       </div>
       {usdValue && (
-        <div className={styles.usdValue}>{usdValue}</div>
+        <div className="text-sm text-text-muted tabular-nums">{usdValue}</div>
       )}
     </div>
   );

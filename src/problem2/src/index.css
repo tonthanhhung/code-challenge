@@ -1,4 +1,31 @@
-/* global reset — App.css handles all theming */
-*, *::before, *::after {
-  box-sizing: border-box;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+  
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #f0f2ff;
+    color: #1a1a2e;
+    min-height: 100svh;
+  }
+  
+  #root {
+    min-height: 100svh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 16px;
+  }
+}
+
+@layer utilities {
+  .tab-nums {
+    font-variant-numeric: tabular-nums;
+  }
 }
