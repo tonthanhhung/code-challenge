@@ -37,10 +37,10 @@ export function TokenSelect({ tokens, value, onChange, label }: Props) {
 
   return (
     <div className="relative flex flex-col gap-1.5 flex-1" ref={ref}>
-      <span className="text-xs font-semibold tracking-wider uppercase text-text-muted">{label}</span>
+      <span className="text-[11px] font-semibold tracking-wider uppercase text-[#8b8fa8]">{label}</span>
       <button
         type="button"
-        className="flex items-center gap-2.5 px-3.5 py-3 bg-input border-[1.5px] border-border rounded-xl cursor-pointer text-[15px] font-semibold text-text transition-colors hover:border-accent focus:outline-none focus:border-accent focus:ring-[3px] focus:ring-accent/25 w-full text-left"
+        className="flex items-center gap-2.5 px-3.5 py-3 bg-[#f7f8ff] border-[1.5px] border-[#e4e6f0] rounded-xl cursor-pointer text-[15px] font-semibold transition-colors hover:border-[#6c47ff] focus:outline-none focus:border-[#6c47ff] w-full text-left"
         onClick={() => setOpen((o) => !o)}
         aria-haspopup="listbox"
         aria-expanded={open}
@@ -48,16 +48,16 @@ export function TokenSelect({ tokens, value, onChange, label }: Props) {
         {value ? (
           <>
             <TokenIcon currency={value.currency} iconUrl={value.iconUrl} />
-            <span className="flex-1">{value.currency}</span>
+            <span className="flex-1 text-[#1a1a2e]">{value.currency}</span>
           </>
         ) : (
-          <span className="text-text-muted font-normal">Select token</span>
+          <span className="flex-1 text-[#8b8fa8] font-normal">Select token</span>
         )}
-        <svg
-          className={`w-4 h-4 text-text-muted shrink-0 transition-transform ${open ? 'rotate-180' : ''}`}
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
+        <svg 
+          className={`w-4 h-4 text-[#8b8fa8] shrink-0 transition-transform ${open ? 'rotate-180' : ''}`} 
+          viewBox="0 0 24 24" 
+          fill="none" 
+          stroke="currentColor" 
           strokeWidth="2"
         >
           <polyline points="6 9 12 15 18 9" />
@@ -66,12 +66,13 @@ export function TokenSelect({ tokens, value, onChange, label }: Props) {
 
       {open && (
         <div
-          className="absolute top-[calc(100%+6px)] left-0 right-0 min-w-[260px] max-w-screen bg-card border-[1.5px] border-border rounded-[14px] shadow-lg z-[100] overflow-hidden animate-[dropIn_0.15s_ease]"
+          className="absolute top-[calc(100%+6px)] left-0 right-0 min-w-[260px] max-w-screen bg-white border-[1.5px] border-[#e4e6f0] rounded-[14px] shadow-[0_20px_60px_rgba(108,71,255,0.12),0_4px_16px_rgba(0,0,0,0.06)] z-[100] overflow-hidden"
+          style={{ animation: 'dropIn 0.15s ease' }}
           role="listbox"
         >
-          <div className="flex items-center gap-2 px-3.5 py-2.5 border-b border-border">
+          <div className="flex items-center gap-2 px-3.5 py-2.5 border-b border-[#e4e6f0]">
             <svg
-              className="w-4 h-4 text-text-muted shrink-0"
+              className="w-4 h-4 text-[#8b8fa8] shrink-0"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
@@ -82,7 +83,7 @@ export function TokenSelect({ tokens, value, onChange, label }: Props) {
             </svg>
             <input
               autoFocus
-              className="flex-1 border-0 bg-transparent text-sm text-text outline-none placeholder:text-text-muted"
+              className="flex-1 border-0 bg-transparent text-sm text-[#1a1a2e] outline-none placeholder:text-[#8b8fa8]"
               placeholder="Search token…"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -90,24 +91,31 @@ export function TokenSelect({ tokens, value, onChange, label }: Props) {
           </div>
           <ul className="list-none m-0 p-1.5 max-h-60 overflow-y-auto">
             {filtered.length === 0 && (
-              <li className="px-4 py-4 text-center text-text-muted text-sm">No tokens found</li>
+              <li className="px-4 py-4 text-center text-[#8b8fa8] text-sm">No tokens found</li>
             )}
             {filtered.map((token) => (
               <li
                 key={token.currency}
                 role="option"
                 aria-selected={value?.currency === token.currency}
-                className={`flex items-center gap-2.5 px-2.5 py-2 rounded-lg cursor-pointer transition-colors hover:bg-hover ${value?.currency === token.currency ? 'bg-accent-subtle' : ''}`}
+                className={`flex items-center gap-2.5 px-2.5 py-2 rounded-lg cursor-pointer transition-colors hover:bg-[#f0f2ff] ${value?.currency === token.currency ? 'bg-[rgba(108,71,255,0.1)]' : ''}`}
                 onClick={() => handleSelect(token)}
               >
                 <TokenIcon currency={token.currency} iconUrl={token.iconUrl} />
-                <span className="flex-1 text-sm font-semibold text-text">{token.currency}</span>
-                <span className="text-xs text-text-muted tabular-nums">${token.price.toFixed(4)}</span>
+                <span className="flex-1 text-sm font-semibold text-[#1a1a2e]">{token.currency}</span>
+                <span className="text-xs text-[#8b8fa8] tabular-nums">${token.price.toFixed(4)}</span>
               </li>
             ))}
           </ul>
         </div>
       )}
+      
+      <style>{`
+        @keyframes dropIn {
+          from { opacity: 0; transform: translateY(-10px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
     </div>
   );
 }
@@ -115,12 +123,12 @@ export function TokenSelect({ tokens, value, onChange, label }: Props) {
 function TokenIcon({ currency, iconUrl }: { currency: string; iconUrl: string }) {
   const [errored, setErrored] = useState(false);
   return errored ? (
-    <span className="w-6 h-6 rounded-full bg-accent-subtle text-accent text-[10px] font-bold flex items-center justify-center shrink-0">
+    <span className="w-6 h-6 rounded-full bg-[rgba(108,71,255,0.1)] text-[#6c47ff] text-[10px] font-bold flex items-center justify-center shrink-0">
       {currency.slice(0, 2)}
     </span>
   ) : (
     <img
-      className="w-6 h-6 rounded-full object-contain bg-icon shrink-0"
+      className="w-6 h-6 rounded-full object-contain bg-[#f0f2ff] shrink-0"
       src={iconUrl}
       alt={currency}
       onError={() => setErrored(true)}

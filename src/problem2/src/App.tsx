@@ -14,7 +14,7 @@ function App() {
           </div>
         )}
         {error && (
-          <div className="flex items-center justify-center gap-3 py-12 text-error text-[15px]">
+          <div className="flex items-center justify-center gap-3 py-12 text-[#e53e3e] text-[15px]">
             Failed to load token prices: {error}
           </div>
         )}

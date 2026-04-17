@@ -78,19 +78,19 @@ export function SwapForm({ tokens }: Props) {
 
   if (status === 'success') {
     return (
-      <div className="flex flex-col items-center gap-4 px-8 py-8 text-center animate-[fadeIn_0.3s_ease]">
-        <div className="w-16 h-16 rounded-full bg-success-bg flex items-center justify-center text-success">
+      <div className="flex flex-col items-center gap-4 px-8 py-8 text-center" style={{ animation: 'fadeIn 0.3s ease' }}>
+        <div className="w-16 h-16 rounded-full bg-[rgba(56,161,105,0.12)] flex items-center justify-center text-[#38a169]">
           <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
             <polyline points="20 6 9 17 4 12" />
           </svg>
         </div>
-        <h2 className="text-[22px] font-bold text-text m-0">Swap Confirmed!</h2>
-        <p className="text-[15px] text-text-muted m-0">
+        <h2 className="text-[22px] font-bold text-[#1a1a2e] m-0">Swap Confirmed!</h2>
+        <p className="text-[15px] text-[#8b8fa8] m-0">
           You swapped <strong>{fromAmount} {fromToken?.currency}</strong> for{' '}
           <strong>{toAmount} {toToken?.currency}</strong>
         </p>
         <button 
-          className="mt-2 px-8 py-3 bg-accent text-white border-0 rounded-xl text-[15px] font-semibold cursor-pointer transition-opacity hover:opacity-90"
+          className="mt-2 px-8 py-3 bg-[#6c47ff] text-white border-0 rounded-xl text-[15px] font-semibold cursor-pointer transition-opacity hover:opacity-90"
           onClick={handleReset}
         >
           New Swap
@@ -102,9 +102,9 @@ export function SwapForm({ tokens }: Props) {
   return (
     <form className="flex flex-col gap-2 w-full" onSubmit={handleSubmit} noValidate>
       <div className="flex items-baseline justify-between mb-1 flex-wrap gap-2">
-        <h1 className="text-[22px] font-bold text-text m-0 tracking-tight">Swap</h1>
+        <h1 className="text-[22px] font-bold text-[#1a1a2e] m-0 tracking-tight">Swap</h1>
         {exchangeRate && fromToken && toToken && (
-          <span className="text-xs text-text-muted tabular-nums">
+          <span className="text-xs text-[#8b8fa8] tabular-nums">
             1 {fromToken.currency} ≈ {exchangeRate.toFixed(6)} {toToken.currency}
           </span>
         )}
@@ -132,7 +132,7 @@ export function SwapForm({ tokens }: Props) {
       <div className="flex justify-center relative z-10 my-[-4px]">
         <button
           type="button"
-          className="w-9 h-9 rounded-full border-2 border-border bg-card cursor-pointer flex items-center justify-center text-text-muted transition-all hover:border-accent hover:text-accent hover:rotate-180"
+          className="w-9 h-9 rounded-full border-2 border-[#e4e6f0] bg-white cursor-pointer flex items-center justify-center text-[#8b8fa8] transition-all hover:border-[#6c47ff] hover:text-[#6c47ff] hover:rotate-180"
           onClick={handleSwapTokens}
           aria-label="Swap direction"
           title="Swap direction"
@@ -161,7 +161,7 @@ export function SwapForm({ tokens }: Props) {
 
       <button
         type="submit"
-        className="mt-2 px-4 py-4 bg-accent text-white border-0 rounded-xl text-base font-bold cursor-pointer transition-all flex items-center justify-center min-h-[54px] hover:opacity-90 active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed"
+        className="mt-2 px-4 py-4 bg-[#6c47ff] text-white border-0 rounded-xl text-base font-bold cursor-pointer transition-all flex items-center justify-center min-h-[54px] hover:opacity-90 active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed"
         disabled={status === 'loading'}
       >
         {status === 'loading' ? (
@@ -170,6 +170,16 @@ export function SwapForm({ tokens }: Props) {
           'Confirm Swap'
         )}
       </button>
+      
+      <style>{`
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(10px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes spin {
+          to { transform: rotate(360deg); }
+        }
+      `}</style>
     </form>
   );
 }
