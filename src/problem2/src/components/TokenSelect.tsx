@@ -1,4 +1,7 @@
+/** @jsxImportSource @emotion/react */
 import { useState, useRef, useEffect } from 'react';
+import styled from '@emotion/styled';
+import { css, keyframes } from '@emotion/react';
 import type { Token } from '../types';
 
 interface Props {
@@ -7,6 +10,389 @@ interface Props {
   onChange: (token: Token) => void;
   label: string;
 }
+
+// Animations
+const dropIn = keyframes`
+  from { opacity: 0; transform: translateY(-10px); }
+  to   { opacity: 1; transform: translateY(0); }
+`;
+
+const slideUp = keyframes`
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+`;
+
+const fadeIn = keyframes`
+  from { opacity: 0; }
+  to   { opacity: 1; }
+`;
+
+// Styled Components
+const Wrapper = styled.div`
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+`;
+
+const LabelText = styled.span`
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #8b8fa8;
+`;
+
+const Trigger = styled.button<{ isOpen: boolean }>`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  background: #f7f8ff;
+  border: 1.5px solid #e4e6f0;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 600;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  width: 100%;
+  text-align: left;
+  outline: none;
+
+  &:hover {
+    border-color: #6c47ff;
+  }
+
+  &:focus-visible {
+    border-color: #6c47ff;
+    box-shadow: 0 0 0 3px rgba(108, 71, 255, 0.25);
+  }
+
+  ${props => props.isOpen && css`
+    border-color: #6c47ff;
+  `}
+`;
+
+const SelectedText = styled.span`
+  flex: 1;
+  color: #1a1a2e;
+`;
+
+const PlaceholderText = styled.span`
+  flex: 1;
+  color: #8b8fa8;
+  font-weight: 400;
+`;
+
+const Chevron = styled.svg<{ isOpen: boolean }>`
+  width: 16px;
+  height: 16px;
+  color: #8b8fa8;
+  flex-shrink: 0;
+  transition: transform 0.2s;
+  
+  ${props => props.isOpen && css`
+    transform: rotate(180deg);
+  `}
+`;
+
+// Desktop Dropdown Styles
+const Dropdown = styled.div`
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  min-width: 260px;
+  max-width: 100vw;
+  background: #ffffff;
+  border: 1.5px solid #e4e6f0;
+  border-radius: 14px;
+  box-shadow: 0 20px 60px rgba(108, 71, 255, 0.12), 0 4px 16px rgba(0, 0, 0, 0.06);
+  z-index: 100;
+  overflow: hidden;
+  animation: ${dropIn} 0.15s ease;
+`;
+
+const SearchWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-bottom: 1px solid #e4e6f0;
+`;
+
+const SearchIcon = styled.svg`
+  width: 16px;
+  height: 16px;
+  color: #8b8fa8;
+  flex-shrink: 0;
+`;
+
+const SearchInput = styled.input`
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-size: 14px;
+  color: #1a1a2e;
+  outline: none;
+
+  &::placeholder {
+    color: #8b8fa8;
+  }
+`;
+
+const TokenList = styled.ul`
+  list-style: none;
+  margin: 0;
+  padding: 6px;
+  max-height: 240px;
+  overflow-y: auto;
+`;
+
+const TokenItem = styled.li<{ isSelected: boolean }>`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.1s;
+
+  &:hover {
+    background: #f0f2ff;
+  }
+
+  ${props => props.isSelected && css`
+    background: rgba(108, 71, 255, 0.1);
+  `}
+`;
+
+const TokenCurrency = styled.span`
+  flex: 1;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a1a2e;
+`;
+
+const TokenPrice = styled.span`
+  font-size: 12px;
+  color: #8b8fa8;
+  font-variant-numeric: tabular-nums;
+`;
+
+const EmptyMessage = styled.li`
+  padding: 16px;
+  text-align: center;
+  color: #8b8fa8;
+  font-size: 14px;
+`;
+
+// Mobile Drawer Styles
+const Backdrop = styled.div`
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 100;
+  animation: ${fadeIn} 0.2s ease;
+`;
+
+const Drawer = styled.div`
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #ffffff;
+  border-radius: 20px 20px 0 0;
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.15);
+  z-index: 101;
+  overflow: hidden;
+  animation: ${slideUp} 0.3s ease;
+  max-height: 85vh;
+`;
+
+const HandleBar = styled.div`
+  display: flex;
+  justify-content: center;
+  padding-top: 12px;
+  padding-bottom: 8px;
+`;
+
+const Handle = styled.div`
+  width: 40px;
+  height: 4px;
+  background: #e4e6f0;
+  border-radius: 2px;
+`;
+
+const DrawerHeader = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  border-bottom: 1px solid #e4e6f0;
+`;
+
+const DrawerTitle = styled.span`
+  font-size: 17px;
+  font-weight: 700;
+  color: #1a1a2e;
+`;
+
+const CloseButton = styled.button`
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #8b8fa8;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: color 0.15s;
+
+  &:hover {
+    color: #1a1a2e;
+  }
+`;
+
+const DrawerSearchWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border-bottom: 1px solid #e4e6f0;
+  background: #f7f8ff;
+`;
+
+const DrawerSearchIcon = styled.svg`
+  width: 20px;
+  height: 20px;
+  color: #8b8fa8;
+  flex-shrink: 0;
+`;
+
+const DrawerSearchInput = styled.input`
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-size: 16px;
+  color: #1a1a2e;
+  outline: none;
+
+  &::placeholder {
+    color: #8b8fa8;
+  }
+`;
+
+const DrawerTokenList = styled.ul`
+  list-style: none;
+  margin: 0;
+  padding: 8px;
+  max-height: 60vh;
+  overflow-y: auto;
+  padding-bottom: 32px;
+`;
+
+const DrawerTokenItem = styled.li<{ isSelected: boolean }>`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.1s, transform 0.1s;
+
+  &:hover {
+    background: #f0f2ff;
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  ${props => props.isSelected && css`
+    background: rgba(108, 71, 255, 0.1);
+  `}
+`;
+
+const TokenInfo = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+`;
+
+const TokenName = styled.span`
+  font-size: 16px;
+  font-weight: 700;
+  color: #1a1a2e;
+`;
+
+const TokenPriceLarge = styled.span`
+  font-size: 14px;
+  color: #8b8fa8;
+`;
+
+const Checkmark = styled.svg`
+  width: 20px;
+  height: 20px;
+  color: #6c47ff;
+`;
+
+const DrawerEmptyMessage = styled.li`
+  padding: 32px 16px;
+  text-align: center;
+  color: #8b8fa8;
+  font-size: 14px;
+`;
+
+// Token Icon Styles
+const Icon = styled.img`
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  object-fit: contain;
+  background: #f0f2ff;
+  flex-shrink: 0;
+`;
+
+const IconFallback = styled.span`
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(108, 71, 255, 0.1);
+  color: #6c47ff;
+  font-size: 10px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+`;
+
+const DrawerIcon = styled.img`
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: contain;
+  background: #f0f2ff;
+  flex-shrink: 0;
+`;
+
+const DrawerIconFallback = styled.span`
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(108, 71, 255, 0.1);
+  color: #6c47ff;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+`;
 
 export function TokenSelect({ tokens, value, onChange, label }: Props) {
   const [open, setOpen] = useState(false);
@@ -71,12 +457,41 @@ export function TokenSelect({ tokens, value, onChange, label }: Props) {
     setSearch('');
   }
 
+  function TokenIcon({ currency, iconUrl, size = 'small' }: { currency: string; iconUrl: string; size?: 'small' | 'large' }) {
+    const [errored, setErrored] = useState(false);
+    
+    if (errored) {
+      if (size === 'large') {
+        return <DrawerIconFallback>{currency.slice(0, 2)}</DrawerIconFallback>;
+      }
+      return <IconFallback>{currency.slice(0, 2)}</IconFallback>;
+    }
+    
+    if (size === 'large') {
+      return (
+        <DrawerIcon
+          src={iconUrl}
+          alt={currency}
+          onError={() => setErrored(true)}
+        />
+      );
+    }
+    
+    return (
+      <Icon
+        src={iconUrl}
+        alt={currency}
+        onError={() => setErrored(true)}
+      />
+    );
+  }
+
   return (
-    <div className="relative flex flex-col gap-1.5 flex-1" ref={ref}>
-      <span className="text-[11px] font-semibold tracking-wider uppercase text-[#8b8fa8]">{label}</span>
-      <button
+    <Wrapper ref={ref}>
+      <LabelText>{label}</LabelText>
+      <Trigger
         type="button"
-        className="flex items-center gap-2.5 px-3.5 py-3 bg-[#f7f8ff] border-[1.5px] border-[#e4e6f0] rounded-xl cursor-pointer text-[15px] font-semibold transition-colors hover:border-[#6c47ff] focus:outline-none focus:border-[#6c47ff] w-full text-left"
+        isOpen={open}
         onClick={() => setOpen((o) => !o)}
         aria-haspopup="listbox"
         aria-expanded={open}
@@ -84,182 +499,115 @@ export function TokenSelect({ tokens, value, onChange, label }: Props) {
         {value ? (
           <>
             <TokenIcon currency={value.currency} iconUrl={value.iconUrl} />
-            <span className="flex-1 text-[#1a1a2e]">{value.currency}</span>
+            <SelectedText>{value.currency}</SelectedText>
           </>
         ) : (
-          <span className="flex-1 text-[#8b8fa8] font-normal">Select token</span>
+          <PlaceholderText>Select token</PlaceholderText>
         )}
-        <svg 
-          className={`w-4 h-4 text-[#8b8fa8] shrink-0 transition-transform ${open ? 'rotate-180' : ''}`} 
-          viewBox="0 0 24 24" 
-          fill="none" 
-          stroke="currentColor" 
+        <Chevron
+          isOpen={open}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
           strokeWidth="2"
         >
           <polyline points="6 9 12 15 18 9" />
-        </svg>
-      </button>
+        </Chevron>
+      </Trigger>
 
       {/* Mobile: Bottom Sheet / Drawer */}
       {isMobile && open && (
         <>
-          {/* Backdrop */}
-          <div 
-            className="fixed inset-0 bg-black/40 z-[100]"
-            style={{ animation: 'fadeIn 0.2s ease' }}
-            onClick={handleClose}
-          />
-          {/* Drawer */}
-          <div
-            className="fixed bottom-0 left-0 right-0 bg-white rounded-t-[20px] shadow-[0_-10px_40px_rgba(0,0,0,0.15)] z-[101] overflow-hidden"
-            style={{ animation: 'slideUp 0.3s ease' }}
-            role="listbox"
-          >
-            {/* Handle bar */}
-            <div className="flex justify-center pt-3 pb-2">
-              <div className="w-10 h-1 bg-[#e4e6f0] rounded-full" />
-            </div>
-            {/* Header */}
-            <div className="flex items-center justify-between px-5 py-3 border-b border-[#e4e6f0]">
-              <span className="text-[17px] font-bold text-[#1a1a2e]">Select Token</span>
-              <button 
-                onClick={handleClose}
-                className="w-8 h-8 flex items-center justify-center text-[#8b8fa8] hover:text-[#1a1a2e] transition-colors"
-                aria-label="Close"
-              >
-                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <Backdrop onClick={handleClose} />
+          <Drawer role="listbox">
+            <HandleBar>
+              <Handle />
+            </HandleBar>
+            <DrawerHeader>
+              <DrawerTitle>Select Token</DrawerTitle>
+              <CloseButton onClick={handleClose} aria-label="Close">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <line x1="18" y1="6" x2="6" y2="18" />
                   <line x1="6" y1="6" x2="18" y2="18" />
                 </svg>
-              </button>
-            </div>
-            {/* Search */}
-            <div className="flex items-center gap-2 px-4 py-3 border-b border-[#e4e6f0] bg-[#f7f8ff]">
-              <svg
-                className="w-5 h-5 text-[#8b8fa8] shrink-0"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
+              </CloseButton>
+            </DrawerHeader>
+            <DrawerSearchWrapper>
+              <DrawerSearchIcon viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <circle cx="11" cy="11" r="8" />
                 <line x1="21" y1="21" x2="16.65" y2="16.65" />
-              </svg>
-              <input
+              </DrawerSearchIcon>
+              <DrawerSearchInput
                 autoFocus
-                className="flex-1 border-0 bg-transparent text-base text-[#1a1a2e] outline-none placeholder:text-[#8b8fa8]"
                 placeholder="Search tokens..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
-            </div>
-            {/* Token List */}
-            <ul className="list-none m-0 p-2 max-h-[60vh] overflow-y-auto pb-8">
+            </DrawerSearchWrapper>
+            <DrawerTokenList>
               {filtered.length === 0 && (
-                <li className="px-4 py-8 text-center text-[#8b8fa8] text-sm">No tokens found</li>
+                <DrawerEmptyMessage>No tokens found</DrawerEmptyMessage>
               )}
               {filtered.map((token) => (
-                <li
+                <DrawerTokenItem
                   key={token.currency}
                   role="option"
                   aria-selected={value?.currency === token.currency}
-                  className={`flex items-center gap-3 px-4 py-4 rounded-xl cursor-pointer transition-colors active:scale-[0.98] ${value?.currency === token.currency ? 'bg-[rgba(108,71,255,0.1)]' : 'hover:bg-[#f0f2ff]'}`}
+                  isSelected={value?.currency === token.currency}
                   onClick={() => handleSelect(token)}
                 >
-                  <TokenIcon currency={token.currency} iconUrl={token.iconUrl} />
-                  <div className="flex-1 flex flex-col">
-                    <span className="text-base font-bold text-[#1a1a2e]">{token.currency}</span>
-                    <span className="text-sm text-[#8b8fa8]">${token.price.toFixed(4)}</span>
-                  </div>
+                  <TokenIcon currency={token.currency} iconUrl={token.iconUrl} size="large" />
+                  <TokenInfo>
+                    <TokenName>{token.currency}</TokenName>
+                    <TokenPriceLarge>${token.price.toFixed(4)}</TokenPriceLarge>
+                  </TokenInfo>
                   {value?.currency === token.currency && (
-                    <svg className="w-5 h-5 text-[#6c47ff]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <Checkmark viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                       <polyline points="20 6 9 17 4 12" />
-                    </svg>
+                    </Checkmark>
                   )}
-                </li>
+                </DrawerTokenItem>
               ))}
-            </ul>
-          </div>
+            </DrawerTokenList>
+          </Drawer>
         </>
       )}
 
       {/* Desktop: Dropdown */}
       {!isMobile && open && (
-        <div
-          className="absolute top-[calc(100%+6px)] left-0 right-0 min-w-[260px] max-w-screen bg-white border-[1.5px] border-[#e4e6f0] rounded-[14px] shadow-[0_20px_60px_rgba(108,71,255,0.12),0_4px_16px_rgba(0,0,0,0.06)] z-[100] overflow-hidden"
-          style={{ animation: 'dropIn 0.15s ease' }}
-          role="listbox"
-        >
-          <div className="flex items-center gap-2 px-3.5 py-2.5 border-b border-[#e4e6f0]">
-            <svg
-              className="w-4 h-4 text-[#8b8fa8] shrink-0"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
+        <Dropdown role="listbox">
+          <SearchWrapper>
+            <SearchIcon viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <circle cx="11" cy="11" r="8" />
               <line x1="21" y1="21" x2="16.65" y2="16.65" />
-            </svg>
-            <input
+            </SearchIcon>
+            <SearchInput
               autoFocus
-              className="flex-1 border-0 bg-transparent text-sm text-[#1a1a2e] outline-none placeholder:text-[#8b8fa8]"
               placeholder="Search token..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
-          </div>
-          <ul className="list-none m-0 p-1.5 max-h-60 overflow-y-auto">
+          </SearchWrapper>
+          <TokenList>
             {filtered.length === 0 && (
-              <li className="px-4 py-4 text-center text-[#8b8fa8] text-sm">No tokens found</li>
+              <EmptyMessage>No tokens found</EmptyMessage>
             )}
             {filtered.map((token) => (
-              <li
+              <TokenItem
                 key={token.currency}
                 role="option"
                 aria-selected={value?.currency === token.currency}
-                className={`flex items-center gap-2.5 px-2.5 py-2 rounded-lg cursor-pointer transition-colors hover:bg-[#f0f2ff] ${value?.currency === token.currency ? 'bg-[rgba(108,71,255,0.1)]' : ''}`}
+                isSelected={value?.currency === token.currency}
                 onClick={() => handleSelect(token)}
               >
                 <TokenIcon currency={token.currency} iconUrl={token.iconUrl} />
-                <span className="flex-1 text-sm font-semibold text-[#1a1a2e]">{token.currency}</span>
-                <span className="text-xs text-[#8b8fa8] tabular-nums">${token.price.toFixed(4)}</span>
-              </li>
+                <TokenCurrency>{token.currency}</TokenCurrency>
+                <TokenPrice>${token.price.toFixed(4)}</TokenPrice>
+              </TokenItem>
             ))}
-          </ul>
-        </div>
+          </TokenList>
+        </Dropdown>
       )}
-      
-      <style>{`
-        @keyframes dropIn {
-          from { opacity: 0; transform: translateY(-10px); }
-          to   { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes slideUp {
-          from { transform: translateY(100%); }
-          to   { transform: translateY(0); }
-        }
-        @keyframes fadeIn {
-          from { opacity: 0; }
-          to   { opacity: 1; }
-        }
-      `}</style>
-    </div>
-  );
-}
-
-function TokenIcon({ currency, iconUrl }: { currency: string; iconUrl: string }) {
-  const [errored, setErrored] = useState(false);
-  return errored ? (
-    <span className="w-6 h-6 rounded-full bg-[rgba(108,71,255,0.1)] text-[#6c47ff] text-[10px] font-bold flex items-center justify-center shrink-0">
-      {currency.slice(0, 2)}
-    </span>
-  ) : (
-    <img
-      className="w-6 h-6 rounded-full object-contain bg-[#f0f2ff] shrink-0"
-      src={iconUrl}
-      alt={currency}
-      onError={() => setErrored(true)}
-    />
+    </Wrapper>
   );
 }

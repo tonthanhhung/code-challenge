@@ -1,4 +1,7 @@
+/** @jsxImportSource @emotion/react */
 import { useState, useCallback } from 'react';
+import styled from '@emotion/styled';
+import { keyframes } from '@emotion/react';
 import type { Token } from '../types';
 import { SwapInputGroup } from './SwapInputGroup';
 
@@ -7,6 +10,191 @@ interface Props {
 }
 
 type SwapStatus = 'idle' | 'loading' | 'success' | 'error';
+
+// Animations
+const fadeIn = keyframes`
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+`;
+
+const spin = keyframes`
+  to { transform: rotate(360deg); }
+`;
+
+// Styled Components
+const Form = styled.form`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+`;
+
+const Header = styled.div`
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 4px;
+  flex-wrap: wrap;
+  gap: 8px;
+`;
+
+const Title = styled.h1`
+  font-size: 22px;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin: 0;
+  letter-spacing: -0.5px;
+`;
+
+const Rate = styled.span`
+  font-size: 12px;
+  color: #8b8fa8;
+  font-variant-numeric: tabular-nums;
+`;
+
+const SwapButtonRow = styled.div`
+  display: flex;
+  justify-content: center;
+  position: relative;
+  z-index: 10;
+  margin: -4px 0;
+`;
+
+const SwapDirectionButton = styled.button`
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2px solid #e4e6f0;
+  background: #ffffff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #8b8fa8;
+  transition: border-color 0.15s, color 0.15s, transform 0.2s;
+
+  &:hover {
+    border-color: #6c47ff;
+    color: #6c47ff;
+    transform: rotate(180deg);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(108, 71, 255, 0.25);
+  }
+`;
+
+const SwapIcon = styled.svg`
+  width: 18px;
+  height: 18px;
+`;
+
+const SubmitButton = styled.button`
+  margin-top: 8px;
+  padding: 16px;
+  background: #6c47ff;
+  color: #ffffff;
+  border: none;
+  border-radius: 14px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.15s, transform 0.1s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 54px;
+
+  &:hover:not(:disabled) {
+    opacity: 0.9;
+  }
+
+  &:active:not(:disabled) {
+    transform: scale(0.98);
+  }
+
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(108, 71, 255, 0.25);
+  }
+`;
+
+const Spinner = styled.span`
+  width: 22px;
+  height: 22px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: ${spin} 0.7s linear infinite;
+`;
+
+// Success State Styles
+const SuccessContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 32px 0;
+  text-align: center;
+  animation: ${fadeIn} 0.3s ease;
+`;
+
+const SuccessIcon = styled.div`
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: rgba(56, 161, 105, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #38a169;
+
+  svg {
+    width: 32px;
+    height: 32px;
+  }
+`;
+
+const SuccessTitle = styled.h2`
+  font-size: 22px;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin: 0;
+`;
+
+const SuccessText = styled.p`
+  font-size: 15px;
+  color: #8b8fa8;
+  margin: 0;
+`;
+
+const ResetButton = styled.button`
+  margin-top: 8px;
+  padding: 12px 32px;
+  background: #6c47ff;
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s;
+
+  &:hover {
+    opacity: 0.9;
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(108, 71, 255, 0.25);
+  }
+`;
 
 export function SwapForm({ tokens }: Props) {
   const [fromToken, setFromToken] = useState<Token | null>(null);
@@ -78,37 +266,34 @@ export function SwapForm({ tokens }: Props) {
 
   if (status === 'success') {
     return (
-      <div className="flex flex-col items-center gap-4 px-8 py-8 text-center" style={{ animation: 'fadeIn 0.3s ease' }}>
-        <div className="w-16 h-16 rounded-full bg-[rgba(56,161,105,0.12)] flex items-center justify-center text-[#38a169]">
-          <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+      <SuccessContainer>
+        <SuccessIcon>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
             <polyline points="20 6 9 17 4 12" />
           </svg>
-        </div>
-        <h2 className="text-[22px] font-bold text-[#1a1a2e] m-0">Swap Confirmed!</h2>
-        <p className="text-[15px] text-[#8b8fa8] m-0">
+        </SuccessIcon>
+        <SuccessTitle>Swap Confirmed!</SuccessTitle>
+        <SuccessText>
           You swapped <strong>{fromAmount} {fromToken?.currency}</strong> for{' '}
           <strong>{toAmount} {toToken?.currency}</strong>
-        </p>
-        <button 
-          className="mt-2 px-8 py-3 bg-[#6c47ff] text-white border-0 rounded-xl text-[15px] font-semibold cursor-pointer transition-opacity hover:opacity-90"
-          onClick={handleReset}
-        >
+        </SuccessText>
+        <ResetButton onClick={handleReset}>
           New Swap
-        </button>
-      </div>
+        </ResetButton>
+      </SuccessContainer>
     );
   }
 
   return (
-    <form className="flex flex-col gap-2 w-full" onSubmit={handleSubmit} noValidate>
-      <div className="flex items-baseline justify-between mb-1 flex-wrap gap-2">
-        <h1 className="text-[22px] font-bold text-[#1a1a2e] m-0 tracking-tight">Swap</h1>
+    <Form onSubmit={handleSubmit} noValidate>
+      <Header>
+        <Title>Swap</Title>
         {exchangeRate && fromToken && toToken && (
-          <span className="text-xs text-[#8b8fa8] tabular-nums">
+          <Rate>
             1 {fromToken.currency} ≈ {exchangeRate.toFixed(6)} {toToken.currency}
-          </span>
+          </Rate>
         )}
-      </div>
+      </Header>
 
       <SwapInputGroup
         id="from-amount"
@@ -128,21 +313,19 @@ export function SwapForm({ tokens }: Props) {
         usdValue={fromUsdValue}
       />
 
-      {/* swap direction button */}
-      <div className="flex justify-center relative z-10 my-[-4px]">
-        <button
+      <SwapButtonRow>
+        <SwapDirectionButton
           type="button"
-          className="w-9 h-9 rounded-full border-2 border-[#e4e6f0] bg-white cursor-pointer flex items-center justify-center text-[#8b8fa8] transition-all hover:border-[#6c47ff] hover:text-[#6c47ff] hover:rotate-180"
           onClick={handleSwapTokens}
           aria-label="Swap direction"
           title="Swap direction"
         >
-          <svg className="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+          <SwapIcon viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
             <line x1="12" y1="5" x2="12" y2="19" />
             <polyline points="19 12 12 19 5 12" />
-          </svg>
-        </button>
-      </div>
+          </SwapIcon>
+        </SwapDirectionButton>
+      </SwapButtonRow>
 
       <SwapInputGroup
         id="to-amount"
@@ -159,27 +342,16 @@ export function SwapForm({ tokens }: Props) {
         usdValue={toUsdValue}
       />
 
-      <button
+      <SubmitButton
         type="submit"
-        className="mt-2 px-4 py-4 bg-[#6c47ff] text-white border-0 rounded-xl text-base font-bold cursor-pointer transition-all flex items-center justify-center min-h-[54px] hover:opacity-90 active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed"
         disabled={status === 'loading'}
       >
         {status === 'loading' ? (
-          <span className="w-[22px] h-[22px] border-[3px] border-white/30 border-t-white rounded-full animate-spin" aria-label="Loading" />
+          <Spinner aria-label="Loading" />
         ) : (
           'Confirm Swap'
         )}
-      </button>
-      
-      <style>{`
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(10px); }
-          to   { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes spin {
-          to { transform: rotate(360deg); }
-        }
-      `}</style>
-    </form>
+      </SubmitButton>
+    </Form>
   );
 }
