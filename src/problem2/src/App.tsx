@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import styled from '@emotion/styled';
 import { useTranslation } from 'react-i18next';
 import { useTokenPrices } from './hooks/useTokenPrices';
@@ -9,6 +9,29 @@ function App() {
   const { tokens, loading, error } = useTokenPrices();
   const { t, i18n } = useTranslation();
   const [currentLang, setCurrentLang] = useState(i18n.language);
+
+  // Sync language with URL on mount only
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const langFromUrl = params.get('lang');
+    
+    // If URL has a valid language different from current, update it
+    if (langFromUrl && ['en', 'vi'].includes(langFromUrl) && langFromUrl !== i18n.language) {
+      i18n.changeLanguage(langFromUrl);
+      setCurrentLang(langFromUrl);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Run only on mount
+
+  // Update URL when language changes
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    params.set('lang', currentLang);
+    
+    // Update URL without page reload
+    const newUrl = `${window.location.pathname}?${params.toString()}`;
+    window.history.replaceState({}, '', newUrl);
+  }, [currentLang]);
 
   const toggleLanguage = () => {
     const newLang = currentLang === 'en' ? 'vi' : 'en';
