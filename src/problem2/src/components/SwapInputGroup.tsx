@@ -18,6 +18,54 @@ interface SwapInputGroupProps {
   placeholder?: string;
 }
 
+export function SwapInputGroup({
+  id,
+  label,
+  amount,
+  onAmountChange,
+  token,
+  onTokenChange,
+  tokens,
+  error,
+  readOnly = false,
+  usdValue,
+  placeholder = '0.00',
+}: SwapInputGroupProps) {
+  return (
+    <Panel>
+      <PanelRow>
+        <AmountWrapper>
+          <Label htmlFor={id}>{label}</Label>
+          <AmountInput
+            id={id}
+            type="number"
+            min="0"
+            step="any"
+            placeholder={placeholder}
+            value={amount}
+            onChange={(e) => onAmountChange?.(e.target.value)}
+            readOnly={readOnly}
+            tabIndex={readOnly ? -1 : undefined}
+            hasError={!!error}
+          />
+          {error && <ErrorMessage>{error}</ErrorMessage>}
+        </AmountWrapper>
+        <TokenSelectWrapper>
+          {/* TokenSelect has its own built-in label */}
+          <TokenSelect
+            tokens={tokens}
+            value={token}
+            onChange={onTokenChange}
+            label="Token"
+          />
+        </TokenSelectWrapper>
+      </PanelRow>
+      {usdValue && <UsdValue>{usdValue}</UsdValue>}
+    </Panel>
+  );
+}
+
+// Styled Components
 const Panel = styled.div`
   background: #f7f8ff;
   border: 1.5px solid #e4e6f0;
@@ -110,50 +158,3 @@ const ErrorMessage = styled.span`
   color: #e53e3e;
   margin-top: 2px;
 `;
-
-export function SwapInputGroup({
-  id,
-  label,
-  amount,
-  onAmountChange,
-  token,
-  onTokenChange,
-  tokens,
-  error,
-  readOnly = false,
-  usdValue,
-  placeholder = '0.00',
-}: SwapInputGroupProps) {
-  return (
-    <Panel>
-      <PanelRow>
-        <AmountWrapper>
-          <Label htmlFor={id}>{label}</Label>
-          <AmountInput
-            id={id}
-            type="number"
-            min="0"
-            step="any"
-            placeholder={placeholder}
-            value={amount}
-            onChange={(e) => onAmountChange?.(e.target.value)}
-            readOnly={readOnly}
-            tabIndex={readOnly ? -1 : undefined}
-            hasError={!!error}
-          />
-          {error && <ErrorMessage>{error}</ErrorMessage>}
-        </AmountWrapper>
-        <TokenSelectWrapper>
-          <Label>Token</Label>
-          <TokenSelect
-            tokens={tokens}
-            value={token}
-            onChange={onTokenChange}
-            label="Token"
-          />
-        </TokenSelectWrapper>
-      </PanelRow>
-      {usdValue && <UsdValue>{usdValue}</UsdValue>}
-    </Panel>
-  );
-}

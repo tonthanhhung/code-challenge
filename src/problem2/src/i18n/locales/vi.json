@@ -1,0 +1,32 @@
+{
+  "app": {
+    "title": "Hoán đổi tiền tệ",
+    "loading": "Đang tải danh sách token...",
+    "error": "Không thể tải giá token"
+  },
+  "swap": {
+    "title": "Hoán đổi",
+    "youSend": "Bạn gửi",
+    "youReceive": "Bạn nhận",
+    "token": "Token",
+    "selectToken": "Chọn token",
+    "searchTokens": "Tìm kiếm token",
+    "noTokensFound": "Không tìm thấy token",
+    "confirmSwap": "Xác nhận hoán đổi",
+    "swapDirection": "Đổi chiều",
+    "newSwap": "Hoán đổi mới",
+    "swapConfirmed": "Hoán đổi thành công!",
+    "swapDescription": "Bạn đã hoán đổi <strong>{{amount}} {{fromCurrency}}</strong> sang <strong>{{toAmount}} {{toCurrency}}</strong>",
+    "close": "Đóng"
+  },
+  "validation": {
+    "selectTokenToSend": "Chọn token để gửi",
+    "selectTokenToReceive": "Chọn token để nhận",
+    "enterValidNumber": "Nhập số hợp lệ",
+    "amountGreaterThanZero": "Số tiền phải lớn hơn 0"
+  },
+  "errors": {
+    "noTokens": "Không có token nào",
+    "generic": "Đã xảy ra lỗi"
+  }
+}

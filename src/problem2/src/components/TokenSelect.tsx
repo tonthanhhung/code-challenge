@@ -1,7 +1,8 @@
 /** @jsxImportSource @emotion/react */
 import { useState, useRef, useEffect } from 'react';
 import styled from '@emotion/styled';
-import { css, keyframes } from '@emotion/react';
+import { keyframes } from '@emotion/react';
+import { useTranslation } from 'react-i18next';
 import type { Token } from '../types';
 
 interface Props {
@@ -9,6 +10,225 @@ interface Props {
   value: Token | null;
   onChange: (token: Token) => void;
   label: string;
+}
+
+export function TokenSelect({ tokens, value, onChange, label }: Props) {
+  const { t } = useTranslation();
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState('');
+  const [isMobile, setIsMobile] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  // Detect mobile viewport
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 640);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  const filtered = tokens.filter((t) =>
+    t.currency.toLowerCase().includes(search.toLowerCase())
+  );
+
+  // Close on outside click (desktop) or escape key
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (!isMobile && ref.current && !ref.current.contains(e.target as Node)) {
+        setOpen(false);
+        setSearch('');
+      }
+    }
+    function handleEscape(e: KeyboardEvent) {
+      if (e.key === 'Escape') {
+        setOpen(false);
+        setSearch('');
+      }
+    }
+    document.addEventListener('mousedown', handleClick);
+    document.addEventListener('keydown', handleEscape);
+    return () => {
+      document.removeEventListener('mousedown', handleClick);
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, [isMobile]);
+
+  // Prevent body scroll when drawer is open
+  useEffect(() => {
+    if (isMobile && open) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isMobile, open]);
+
+  function handleSelect(token: Token) {
+    onChange(token);
+    setOpen(false);
+    setSearch('');
+  }
+
+  function handleClose() {
+    setOpen(false);
+    setSearch('');
+  }
+
+  return (
+    <Wrapper ref={ref}>
+      <LabelText>{label}</LabelText>
+      <Trigger
+        type="button"
+        isOpen={open}
+        onClick={() => setOpen((o) => !o)}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+      >
+        {value ? (
+          <>
+            <TokenIcon currency={value.currency} iconUrl={value.iconUrl} />
+            <SelectedText>{value.currency}</SelectedText>
+          </>
+        ) : (
+          <PlaceholderText>{t('swap.selectToken')}</PlaceholderText>
+        )}
+        <Chevron
+          isOpen={open}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+        >
+          <polyline points="6 9 12 15 18 9" />
+        </Chevron>
+      </Trigger>
+
+      {/* Mobile: Bottom Sheet / Drawer */}
+      {isMobile && open && (
+        <>
+          <Backdrop onClick={handleClose} />
+          <Drawer role="listbox">
+            <HandleBar>
+              <Handle />
+            </HandleBar>
+            <DrawerHeader>
+              <DrawerTitle>{t('swap.selectToken')}</DrawerTitle>
+              <CloseButton onClick={handleClose} aria-label={t('swap.close')}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </CloseButton>
+            </DrawerHeader>
+            <DrawerSearchWrapper>
+              <DrawerSearchIcon viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+              </DrawerSearchIcon>
+              <DrawerSearchInput
+                autoFocus
+                placeholder={t('swap.searchTokens')}
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+            </DrawerSearchWrapper>
+            <DrawerTokenList>
+              {filtered.length === 0 && (
+                <DrawerEmptyMessage>{t('swap.noTokensFound')}</DrawerEmptyMessage>
+              )}
+              {filtered.map((token) => (
+                <DrawerTokenItem
+                  key={token.currency}
+                  role="option"
+                  aria-selected={value?.currency === token.currency}
+                  isSelected={value?.currency === token.currency}
+                  onClick={() => handleSelect(token)}
+                >
+                  <TokenIcon currency={token.currency} iconUrl={token.iconUrl} size="large" />
+                  <TokenInfo>
+                    <TokenName>{token.currency}</TokenName>
+                    <TokenPriceLarge>${token.price.toFixed(4)}</TokenPriceLarge>
+                  </TokenInfo>
+                  {value?.currency === token.currency && (
+                    <Checkmark viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                      <polyline points="20 6 9 17 4 12" />
+                    </Checkmark>
+                  )}
+                </DrawerTokenItem>
+              ))}
+            </DrawerTokenList>
+          </Drawer>
+        </>
+      )}
+
+      {/* Desktop: Dropdown */}
+      {!isMobile && open && (
+        <Dropdown role="listbox">
+          <SearchWrapper>
+            <SearchIcon viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </SearchIcon>
+            <SearchInput
+              autoFocus
+              placeholder={t('swap.searchTokens')}
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </SearchWrapper>
+          <TokenList>
+            {filtered.length === 0 && (
+              <EmptyMessage>{t('swap.noTokensFound')}</EmptyMessage>
+            )}
+            {filtered.map((token) => (
+              <TokenItem
+                key={token.currency}
+                role="option"
+                aria-selected={value?.currency === token.currency}
+                isSelected={value?.currency === token.currency}
+                onClick={() => handleSelect(token)}
+              >
+                <TokenIcon currency={token.currency} iconUrl={token.iconUrl} />
+                <TokenCurrency>{token.currency}</TokenCurrency>
+                <TokenPrice>${token.price.toFixed(4)}</TokenPrice>
+              </TokenItem>
+            ))}
+          </TokenList>
+        </Dropdown>
+      )}
+    </Wrapper>
+  );
+}
+
+function TokenIcon({ currency, iconUrl, size = 'small' }: { currency: string; iconUrl: string; size?: 'small' | 'large' }) {
+  const [errored, setErrored] = useState(false);
+  
+  if (errored) {
+    if (size === 'large') {
+      return <DrawerIconFallback>{currency.slice(0, 2)}</DrawerIconFallback>;
+    }
+    return <IconFallback>{currency.slice(0, 2)}</IconFallback>;
+  }
+  
+  if (size === 'large') {
+    return (
+      <DrawerIcon
+        src={iconUrl}
+        alt={currency}
+        onError={() => setErrored(true)}
+      />
+    );
+  }
+  
+  return (
+    <Icon
+      src={iconUrl}
+      alt={currency}
+      onError={() => setErrored(true)}
+    />
+  );
 }
 
 // Animations
@@ -69,7 +289,7 @@ const Trigger = styled.button<{ isOpen: boolean }>`
     box-shadow: 0 0 0 3px rgba(108, 71, 255, 0.25);
   }
 
-  ${props => props.isOpen && css`
+  ${props => props.isOpen && `
     border-color: #6c47ff;
   `}
 `;
@@ -92,7 +312,7 @@ const Chevron = styled.svg<{ isOpen: boolean }>`
   flex-shrink: 0;
   transition: transform 0.2s;
   
-  ${props => props.isOpen && css`
+  ${props => props.isOpen && `
     transform: rotate(180deg);
   `}
 `;
@@ -163,7 +383,7 @@ const TokenItem = styled.li<{ isSelected: boolean }>`
     background: #f0f2ff;
   }
 
-  ${props => props.isSelected && css`
+  ${props => props.isSelected && `
     background: rgba(108, 71, 255, 0.1);
   `}
 `;
@@ -311,7 +531,7 @@ const DrawerTokenItem = styled.li<{ isSelected: boolean }>`
     transform: scale(0.98);
   }
 
-  ${props => props.isSelected && css`
+  ${props => props.isSelected && `
     background: rgba(108, 71, 255, 0.1);
   `}
 `;
@@ -393,221 +613,3 @@ const DrawerIconFallback = styled.span`
   justify-content: center;
   flex-shrink: 0;
 `;
-
-export function TokenSelect({ tokens, value, onChange, label }: Props) {
-  const [open, setOpen] = useState(false);
-  const [search, setSearch] = useState('');
-  const [isMobile, setIsMobile] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-
-  // Detect mobile viewport
-  useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 640);
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-
-  const filtered = tokens.filter((t) =>
-    t.currency.toLowerCase().includes(search.toLowerCase())
-  );
-
-  // Close on outside click (desktop) or escape key
-  useEffect(() => {
-    function handleClick(e: MouseEvent) {
-      if (!isMobile && ref.current && !ref.current.contains(e.target as Node)) {
-        setOpen(false);
-        setSearch('');
-      }
-    }
-    function handleEscape(e: KeyboardEvent) {
-      if (e.key === 'Escape') {
-        setOpen(false);
-        setSearch('');
-      }
-    }
-    document.addEventListener('mousedown', handleClick);
-    document.addEventListener('keydown', handleEscape);
-    return () => {
-      document.removeEventListener('mousedown', handleClick);
-      document.removeEventListener('keydown', handleEscape);
-    };
-  }, [isMobile]);
-
-  // Prevent body scroll when drawer is open
-  useEffect(() => {
-    if (isMobile && open) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [isMobile, open]);
-
-  function handleSelect(token: Token) {
-    onChange(token);
-    setOpen(false);
-    setSearch('');
-  }
-
-  function handleClose() {
-    setOpen(false);
-    setSearch('');
-  }
-
-  function TokenIcon({ currency, iconUrl, size = 'small' }: { currency: string; iconUrl: string; size?: 'small' | 'large' }) {
-    const [errored, setErrored] = useState(false);
-    
-    if (errored) {
-      if (size === 'large') {
-        return <DrawerIconFallback>{currency.slice(0, 2)}</DrawerIconFallback>;
-      }
-      return <IconFallback>{currency.slice(0, 2)}</IconFallback>;
-    }
-    
-    if (size === 'large') {
-      return (
-        <DrawerIcon
-          src={iconUrl}
-          alt={currency}
-          onError={() => setErrored(true)}
-        />
-      );
-    }
-    
-    return (
-      <Icon
-        src={iconUrl}
-        alt={currency}
-        onError={() => setErrored(true)}
-      />
-    );
-  }
-
-  return (
-    <Wrapper ref={ref}>
-      <LabelText>{label}</LabelText>
-      <Trigger
-        type="button"
-        isOpen={open}
-        onClick={() => setOpen((o) => !o)}
-        aria-haspopup="listbox"
-        aria-expanded={open}
-      >
-        {value ? (
-          <>
-            <TokenIcon currency={value.currency} iconUrl={value.iconUrl} />
-            <SelectedText>{value.currency}</SelectedText>
-          </>
-        ) : (
-          <PlaceholderText>Select token</PlaceholderText>
-        )}
-        <Chevron
-          isOpen={open}
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-        >
-          <polyline points="6 9 12 15 18 9" />
-        </Chevron>
-      </Trigger>
-
-      {/* Mobile: Bottom Sheet / Drawer */}
-      {isMobile && open && (
-        <>
-          <Backdrop onClick={handleClose} />
-          <Drawer role="listbox">
-            <HandleBar>
-              <Handle />
-            </HandleBar>
-            <DrawerHeader>
-              <DrawerTitle>Select Token</DrawerTitle>
-              <CloseButton onClick={handleClose} aria-label="Close">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <line x1="18" y1="6" x2="6" y2="18" />
-                  <line x1="6" y1="6" x2="18" y2="18" />
-                </svg>
-              </CloseButton>
-            </DrawerHeader>
-            <DrawerSearchWrapper>
-              <DrawerSearchIcon viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="11" cy="11" r="8" />
-                <line x1="21" y1="21" x2="16.65" y2="16.65" />
-              </DrawerSearchIcon>
-              <DrawerSearchInput
-                autoFocus
-                placeholder="Search tokens..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-              />
-            </DrawerSearchWrapper>
-            <DrawerTokenList>
-              {filtered.length === 0 && (
-                <DrawerEmptyMessage>No tokens found</DrawerEmptyMessage>
-              )}
-              {filtered.map((token) => (
-                <DrawerTokenItem
-                  key={token.currency}
-                  role="option"
-                  aria-selected={value?.currency === token.currency}
-                  isSelected={value?.currency === token.currency}
-                  onClick={() => handleSelect(token)}
-                >
-                  <TokenIcon currency={token.currency} iconUrl={token.iconUrl} size="large" />
-                  <TokenInfo>
-                    <TokenName>{token.currency}</TokenName>
-                    <TokenPriceLarge>${token.price.toFixed(4)}</TokenPriceLarge>
-                  </TokenInfo>
-                  {value?.currency === token.currency && (
-                    <Checkmark viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                      <polyline points="20 6 9 17 4 12" />
-                    </Checkmark>
-                  )}
-                </DrawerTokenItem>
-              ))}
-            </DrawerTokenList>
-          </Drawer>
-        </>
-      )}
-
-      {/* Desktop: Dropdown */}
-      {!isMobile && open && (
-        <Dropdown role="listbox">
-          <SearchWrapper>
-            <SearchIcon viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <circle cx="11" cy="11" r="8" />
-              <line x1="21" y1="21" x2="16.65" y2="16.65" />
-            </SearchIcon>
-            <SearchInput
-              autoFocus
-              placeholder="Search token..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-          </SearchWrapper>
-          <TokenList>
-            {filtered.length === 0 && (
-              <EmptyMessage>No tokens found</EmptyMessage>
-            )}
-            {filtered.map((token) => (
-              <TokenItem
-                key={token.currency}
-                role="option"
-                aria-selected={value?.currency === token.currency}
-                isSelected={value?.currency === token.currency}
-                onClick={() => handleSelect(token)}
-              >
-                <TokenIcon currency={token.currency} iconUrl={token.iconUrl} />
-                <TokenCurrency>{token.currency}</TokenCurrency>
-                <TokenPrice>${token.price.toFixed(4)}</TokenPrice>
-              </TokenItem>
-            ))}
-          </TokenList>
-        </Dropdown>
-      )}
-    </Wrapper>
-  );
-}

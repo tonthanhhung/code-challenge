@@ -1,0 +1,32 @@
+{
+  "app": {
+    "title": "Currency Swap",
+    "loading": "Loading tokens...",
+    "error": "Failed to load token prices"
+  },
+  "swap": {
+    "title": "Swap",
+    "youSend": "You send",
+    "youReceive": "You receive",
+    "token": "Token",
+    "selectToken": "Select token",
+    "searchTokens": "Search tokens",
+    "noTokensFound": "No tokens found",
+    "confirmSwap": "Confirm Swap",
+    "swapDirection": "Swap direction",
+    "newSwap": "New Swap",
+    "swapConfirmed": "Swap Confirmed!",
+    "swapDescription": "You swapped <strong>{{amount}} {{fromCurrency}}</strong> for <strong>{{toAmount}} {{toCurrency}}</strong>",
+    "close": "Close"
+  },
+  "validation": {
+    "selectTokenToSend": "Select a token to send",
+    "selectTokenToReceive": "Select a token to receive",
+    "enterValidNumber": "Enter a valid number",
+    "amountGreaterThanZero": "Amount must be greater than 0"
+  },
+  "errors": {
+    "noTokens": "No tokens available",
+    "generic": "An error occurred"
+  }
+}
